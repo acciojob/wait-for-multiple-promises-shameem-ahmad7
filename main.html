@@ -1,33 +1,64 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wait for Multiple Promises</title>
+  <style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <table id="promiseTable">
+    <tr>
+      <td colspan="2">Loading...</td>
+    </tr>
+  </table>
+  
+  <script>
+    // Reference to the table
+    const table = document.getElementById('promiseTable');
 
-<html>
-  <head>
-    <link rel="stylesheet" href="styles.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
-      crossorigin="anonymous"
-    />
-  </head>
+    // Function to create a promise with random delay
+    const createPromise = (index) => {
+      return new Promise((resolve) => {
+        const delay = Math.random() * 2 + 1; // Random delay between 1 and 3 seconds
+        setTimeout(() => resolve({ name: `Promise ${index}`, time: delay.toFixed(3) }), delay * 1000);
+      });
+    };
 
-  <body>
-    <!-- the entire body must be written by student -->
-    <table class="table table-striped table-hover table-bordered">
-      <thead>
-        <tr>
-          <th>Promise Name</th>
-          <th>Time taken (s)</th>
-        </tr>
-      </thead>
-      <tbody id="output"></tbody>
-    </table>
+    // Array of promises
+    const promises = [createPromise(1), createPromise(2), createPromise(3)];
+    const startTime = performance.now(); // Start time for total duration
 
-    <script type="text/javascript" src="./script.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
-      crossorigin="anonymous"
-    ></script>
-  </body>
+    Promise.all(promises).then((results) => {
+      const totalTime = ((performance.now() - startTime) / 1000).toFixed(3); // Total time in seconds
+
+      // Clear loading text
+      table.innerHTML = '';
+
+      // Populate table rows
+      results.forEach((result, index) => {
+        const row = table.insertRow();
+        const cell1 = row.insertCell(0);
+        const cell2 = row.insertCell(1);
+        cell1.textContent = result.name;
+        cell2.textContent = result.time + ' seconds';
+      });
+
+      // Add total row
+      const totalRow = table.insertRow();
+      const cell1 = totalRow.insertCell(0);
+      const cell2 = totalRow.insertCell(1);
+      cell1.textContent = 'Total';
+      cell2.textContent = totalTime + ' seconds';
+    });
+  </script>
+</body>
 </html>
